@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vektor — AI Analytics for Tech Teams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════
+   DESIGN TOKENS
+════════════════════════════════════════ */
+:root {
+  --white:   #ffffff;
+  --off:     #f7f7f5;
+  --off2:    #f0efe9;
+  --stone:   #e8e6de;
+  --line:    #dddbd3;
+  --line2:   #c8c5bc;
+  --text:    #18181b;
+  --muted:   #52525b;
+  --dim:     #a1a1aa;
+  --accent:  #1d4ed8;        /* strong blue */
+  --accent-h:#1e40af;
+  --accent-l:#dbeafe;
+  --accent-ll:#eff6ff;
+  --green:   #16a34a;
+  --green-l: #dcfce7;
+  --red:     #dc2626;
+  --red-l:   #fee2e2;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:    0 4px 16px rgba(0,0,0,.07), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,.10), 0 8px 20px rgba(0,0,0,.06);
+  --radius:  10px;
+  --font-d:  'Playfair Display', Georgia, serif;
+  --font-s:  'DM Sans', system-ui, sans-serif;
+  --font-m:  'DM Mono', monospace;
+}
+
+/* ════════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--white);
+  color: var(--text);
+  font-family: var(--font-s);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { display: block; max-width: 100%; }
+a { text-decoration: none; color: inherit; }
+
+/* ════════════════════════════════════════
+   NAV
+════════════════════════════════════════ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  height: 60px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-s);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -.03em;
+  color: var(--text);
+}
+.nav-logomark {
+  width: 30px; height: 30px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+}
+.nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+.nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); transition: color .18s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta-wrap { display: flex; align-items: center; gap: 10px; }
+
+/* ════════════════════════════════════════
+   BUTTONS
+════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 22px;
+  border-radius: 8px;
+  font-family: var(--font-s);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  cursor: pointer;
+  border: none;
+  transition: all .18s;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-h); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(29,78,216,.25); }
+.btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--line2); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-ll); transform: translateY(-1px); }
+.btn-white { background: white; color: var(--accent); font-weight: 700; }
+.btn-white:hover { background: var(--accent-ll); transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--muted); font-size: 13px; }
+.btn-ghost:hover { color: var(--accent); }
+.btn-lg { padding: 14px 30px; font-size: 15px; border-radius: 10px; }
+
+/* ════════════════════════════════════════
+   LAYOUT UTILITIES
+════════════════════════════════════════ */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+.wrap-sm { max-width: 720px; margin: 0 auto; padding: 0 40px; }
+section { padding: 100px 0; }
+section.alt { background: var(--off); }
+section.alt2 { background: var(--off2); }
+
+/* ════════════════════════════════════════
+   LABELS
+════════════════════════════════════════ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 4px 11px;
+  border-radius: 100px;
+  border: 1.5px solid;
+  margin-bottom: 18px;
+}
+.chip-blue { color: var(--accent); border-color: rgba(29,78,216,.25); background: var(--accent-ll); }
+.chip-green { color: var(--green); border-color: rgba(22,163,74,.25); background: var(--green-l); }
+.chip-red { color: var(--red); border-color: rgba(220,38,38,.22); background: var(--red-l); }
+.chip-grey { color: var(--muted); border-color: var(--line2); background: var(--off); }
+
+/* ════════════════════════════════════════
+   SECTION HEADINGS
+════════════════════════════════════════ */
+.sh { text-align: center; margin-bottom: 56px; }
+.sh h2 {
+  font-family: var(--font-d);
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.sh p {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+#hero {
+  padding: 160px 0 80px;
+  background: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+/* Subtle grid pattern */
+#hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: .45;
+  pointer-events: none;
+}
+/* Gradient fade over grid at bottom */
+#hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, transparent, var(--white));
+  pointer-events: none;
+}
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.hero-headline {
+  font-family: var(--font-d);
+  font-size: clamp(44px, 6.5vw, 80px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  color: var(--text);
+  max-width: 860px;
+  margin: 0 auto 22px;
+}
+.hero-headline em { font-style: italic; color: var(--accent); }
+.hero-sub {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 38px;
+  line-height: 1.72;
+  font-weight: 400;
+}
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+.hero-cal {
+  font-size: 13px;
+  color: var(--dim);
+  margin-bottom: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.hero-cal a { color: var(--accent); font-weight: 500; }
+.hero-cal a:hover { text-decoration: underline; }
+
+/* ── DEMO WINDOW ── */
+.demo-win {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.dw-bar {
+  background: var(--off);
+  border-bottom: 1px solid var(--line);
+  padding: 11px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dw-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dw-dot:nth-child(1) { background: #ff5f57; }
+.dw-dot:nth-child(2) { background: #febc2e; }
+.dw-dot:nth-child(3) { background: #28c840; }
+.dw-bartitle { flex: 1; text-align: center; font-family: var(--font-m); font-size: 12px; color: var(--dim); }
+.dw-body { padding: 24px; }
+.dw-prompt {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  background: var(--off);
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  padding: 13px 16px;
+  margin-bottom: 22px;
+}
+.dw-prompt svg { flex-shrink: 0; }
+.dw-prompt span {
+  font-size: 14.5px;
+  color: var(--text);
+  flex: 1;
+  font-family: var(--font-s);
+}
+.dw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background: var(--accent);
+  border-radius: 1px;
+  vertical-align: middle;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+.dw-processing {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-m);
+  font-size: 12.5px;
+  color: var(--dim);
+  padding: 9px 13px;
+  background: var(--accent-ll);
+  border: 1px solid rgba(29,78,216,.15);
+  border-radius: 7px;
+  margin-bottom: 20px;
+}
+.dw-spin {
+  width: 13px; height: 13px;
+  border: 2px solid rgba(29,78,216,.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.dw-result {
+  background: var(--off);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+}
+.dw-result-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.dw-result-text {
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.65;
+  margin-bottom: 18px;
+}
+.dw-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  height: 72px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.dw-bar-item {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  animation: rise .7s cubic-bezier(.34,1.56,.64,1) backwards;
+}
+@keyframes rise {
+  from { transform: scaleY(0); transform-origin: bottom; }
+  to { transform: scaleY(1); transform-origin: bottom; }
+}
+.dw-bar-item:nth-child(1) { height: 40%; background: var(--accent); opacity: .6; animation-delay: .1s; }
+.dw-bar-item:nth-child(2) { height: 58%; background: var(--accent); opacity: .7; animation-delay: .15s; }
+.dw-bar-item:nth-child(3) { height: 75%; background: var(--accent); opacity: .8; animation-delay: .2s; }
+.dw-bar-item:nth-child(4) { height: 50%; background: var(--accent); opacity: .7; animation-delay: .25s; }
+.dw-bar-item:nth-child(5) { height: 34%; background: var(--red); opacity: .75; animation-delay: .3s; }
+.dw-bar-item:nth-child(6) { height: 24%; background: var(--red); opacity: .75; animation-delay: .35s; }
+.dw-bar-item:nth-child(7) { height: 20%; background: var(--red); opacity: .75; animation-delay: .4s; }
+.dw-chart-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 6px;
+}
+.dw-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.dw-tag {
+  font-family: var(--font-m);
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--white);
+  border: 1px solid var(--line);
+  padding: 3px 9px;
+  border-radius: 5px;
+}
+
+/* ════════════════════════════════════════
+   LOGO BELT
+════════════════════════════════════════ */
+.logo-belt {
+  background: var(--off);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 28px 0;
+}
+.lb-label {
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 20px;
+}
+.lb-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 40px;
+}
+.lb-chip {
+  font-family: var(--font-m);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--white);
+  border: 1px solid var(--line);
+  padding: 6px 15px;
+  border-radius: 7px;
+  letter-spacing: -.01em;
+  transition: border-color .2s, color .2s;
+}
+.lb-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ════════════════════════════════════════
+   PROBLEM SECTION
+════════════════════════════════════════ */
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5px;
+  background: var(--line);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.prob-card {
+  background: var(--white);
+  padding: 40px 36px;
+}
+.prob-card:nth-child(1) { border-radius: 12px 0 0 0; }
+.prob-card:nth-child(2) { border-radius: 0 12px 0 0; }
+.prob-card:nth-child(3) { border-radius: 0 0 0 12px; }
+.prob-card:nth-child(4) { border-radius: 0 0 12px 0; }
+.prob-eyebrow {
+  font-family: var(--font-m);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.prob-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 18px; height: 1.5px;
+  background: var(--line2);
+}
+.prob-title {
+  font-family: var(--font-d);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  letter-spacing: -.02em;
+  line-height: 1.25;
+}
+.prob-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+/* ════════════════════════════════════════
+   WHY FAIL
+════════════════════════════════════════ */
+.fail-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.fail-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 30px 28px;
+  position: relative;
+  transition: box-shadow .2s, transform .2s;
+}
+.fail-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.fail-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 20px; right: 20px;
+  height: 3px;
+  background: var(--red-l);
+  border-radius: 0 0 4px 4px;
+}
+.fail-tool { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--red); margin-bottom: 10px; }
+.fail-title { font-family: var(--font-d); font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px; letter-spacing: -.02em; }
+.fail-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.fail-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.fail-x { color: var(--red); font-size: 14px; flex-shrink: 0; font-weight: 700; margin-top: .5px; }
+
+/* ════════════════════════════════════════
+   SOLUTION
+════════════════════════════════════════ */
+.sol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+.sol-steps { display: flex; flex-direction: column; gap: 20px; margin-top: 28px; }
+.sol-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.sol-num {
+  width: 30px; height: 30px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.sol-step-text strong { font-size: 15px; color: var(--text); display: block; margin-bottom: 4px; }
+.sol-step-text p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+
+/* Mockup panel */
+.sol-panel {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.sp-bar {
+  background: var(--off);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.sp-tab {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dim);
+  padding: 4px 1px;
+  border-bottom: 2px solid transparent;
+  cursor: default;
+}
+.sp-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.sp-body { padding: 20px; }
+.sp-q {
+  background: var(--accent-ll);
+  border: 1px solid rgba(29,78,216,.18);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-family: var(--font-m);
+  font-size: 12.5px;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.sp-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.sp-metric {
+  background: var(--off);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 14px;
+}
+.sp-metric-l { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--dim); margin-bottom: 6px; }
+.sp-metric-v { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -.04em; line-height: 1; }
+.sp-metric-d { font-size: 11.5px; font-family: var(--font-m); margin-top: 4px; }
+.sp-down { color: var(--red); }
+.sp-up { color: var(--green); }
+.sp-insight {
+  background: var(--green-l);
+  border: 1px solid rgba(22,163,74,.2);
+  border-radius: 9px;
+  padding: 13px 15px;
+  font-size: 13px;
+  color: #166534;
+  line-height: 1.6;
+  display: flex;
+  gap: 9px;
+}
+
+/* ════════════════════════════════════════
+   HOW IT WORKS
+════════════════════════════════════════ */
+.hiw-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2px;
+  background: var(--line);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.hiw-step { background: var(--white); padding: 44px 36px; }
+.hiw-num {
+  font-family: var(--font-m);
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--accent-l);
+  line-height: 1;
+  margin-bottom: 22px;
+  letter-spacing: -.04em;
+}
+.hiw-title { font-family: var(--font-d); font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 12px; letter-spacing: -.02em; }
+.hiw-desc { font-size: 14px; color: var(--muted); line-height: 1.72; margin-bottom: 22px; }
+.hiw-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.hiw-tag {
+  font-family: var(--font-m);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--off);
+  border: 1px solid var(--line);
+  padding: 3px 9px;
+  border-radius: 5px;
+}
+
+/* ════════════════════════════════════════
+   USE CASES
+════════════════════════════════════════ */
+.uc-nav {
+  display: flex;
+  gap: 3px;
+  background: var(--off);
+  border: 1.5px solid var(--line);
+  padding: 4px;
+  border-radius: 10px;
+  width: fit-content;
+  margin: 0 auto 40px;
+}
+.uc-btn {
+  padding: 8px 20px;
+  border-radius: 7px;
+  font-family: var(--font-s);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .18s;
+  border: none;
+  background: transparent;
+}
+.uc-btn:hover { color: var(--text); }
+.uc-btn.on { background: var(--white); color: var(--text); border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
+.uc-panel { display: none; }
+.uc-panel.on { display: grid; grid-template-columns: 2fr 3fr; gap: 52px; align-items: start; }
+.uc-copy-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.uc-copy-title { font-family: var(--font-d); font-size: 26px; font-weight: 700; color: var(--text); letter-spacing: -.03em; margin-bottom: 14px; line-height: 1.2; }
+.uc-copy-text { font-size: 14.5px; color: var(--muted); line-height: 1.72; margin-bottom: 24px; }
+.uc-qs { display: flex; flex-direction: column; gap: 9px; }
+.uc-q {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 9px;
+  padding: 13px 16px;
+  font-size: 13.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  cursor: default;
+  transition: border-color .18s, color .18s, background .18s;
+}
+.uc-q:hover { border-color: var(--accent); color: var(--text); background: var(--accent-ll); }
+.uc-q-icon { font-size: 15px; flex-shrink: 0; }
+
+/* ════════════════════════════════════════
+   ARCHITECTURE
+════════════════════════════════════════ */
+.arch {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.arch-sources {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 0;
+}
+.arch-box {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 20px;
+  text-align: center;
+  transition: all .2s;
+  min-width: 100px;
+}
+.arch-box:hover { border-color: var(--accent); box-shadow: 0 4px 14px rgba(29,78,216,.1); transform: translateY(-2px); }
+.arch-box-t { font-size: 12.5px; font-weight: 700; color: var(--text); letter-spacing: -.01em; }
+.arch-box-s { font-size: 10px; color: var(--dim); font-family: var(--font-m); margin-top: 2px; }
+.arch-box.blue { border-color: rgba(29,78,216,.3); background: var(--accent-ll); }
+.arch-box.blue .arch-box-t { color: var(--accent); }
+.arch-box.green { border-color: rgba(22,163,74,.3); background: var(--green-l); }
+.arch-box.green .arch-box-t { color: var(--green); }
+.arch-arrow {
+  color: var(--dim);
+  font-size: 18px;
+  margin: 10px 0;
+  line-height: 1;
+}
+.arch-sep { color: var(--dim); font-size: 16px; margin: 0 4px; }
+
+/* ════════════════════════════════════════
+   BENEFITS
+════════════════════════════════════════ */
+.ben-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
+.ben-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 30px 24px;
+  text-align: center;
+  transition: all .22s;
+}
+.ben-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow); }
+.ben-icon { font-size: 28px; margin-bottom: 14px; }
+.ben-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 9px; letter-spacing: -.02em; }
+.ben-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+/* ════════════════════════════════════════
+   SECURITY
+════════════════════════════════════════ */
+.sec-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; max-width: 680px; margin-top: 52px; }
+.sec-card {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 11px;
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: all .2s;
+}
+.sec-card:hover { border-color: var(--accent); box-shadow: var(--shadow-sm); }
+.sec-ico {
+  width: 36px; height: 36px;
+  background: var(--accent-ll);
+  border: 1px solid rgba(29,78,216,.18);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.sec-title { font-size: 14.5px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.sec-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+/* ════════════════════════════════════════
+   PRICING
+════════════════════════════════════════ */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2px;
+  background: var(--line);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.pc { background: var(--white); padding: 40px 36px; position: relative; }
+.pc.featured { background: var(--accent); }
+.pc-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 100px;
+  margin-bottom: 18px;
+}
+.pc-badge-default { color: var(--dim); background: var(--off); border: 1px solid var(--line); }
+.pc-badge-featured { color: rgba(255,255,255,.8); background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); }
+.pc-name { font-family: var(--font-d); font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -.04em; margin-bottom: 8px; }
+.pc.featured .pc-name { color: white; }
+.pc-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+.pc.featured .pc-desc { color: rgba(255,255,255,.75); }
+.pc-divider { height: 1px; background: var(--line); margin-bottom: 22px; }
+.pc.featured .pc-divider { background: rgba(255,255,255,.2); }
+.pc-feats { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+.pc-feats li { display: flex; align-items: flex-start; gap: 10px; font-size: 13.5px; color: var(--muted); }
+.pc.featured .pc-feats li { color: rgba(255,255,255,.85); }
+.pc-check { color: var(--green); font-weight: 700; flex-shrink: 0; }
+.pc.featured .pc-check { color: rgba(255,255,255,.9); }
+
+/* ════════════════════════════════════════
+   CTA BAND (mid page)
+════════════════════════════════════════ */
+.cta-band {
+  background: var(--text);
+  color: white;
+  padding: 80px 0;
+  text-align: center;
+}
+.cta-band h2 {
+  font-family: var(--font-d);
+  font-size: clamp(28px, 4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  margin-bottom: 14px;
+}
+.cta-band p { font-size: 17px; color: rgba(255,255,255,.65); margin-bottom: 34px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.cta-band-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+.cta-band-cal { font-size: 13px; color: rgba(255,255,255,.45); }
+.cta-band-cal a { color: rgba(255,255,255,.7); }
+.cta-band-cal a:hover { color: white; }
+
+/* ════════════════════════════════════════
+   FINAL CTA + FORM
+════════════════════════════════════════ */
+#final-cta { background: var(--off); }
+.fcta-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+.fcta-headline {
+  font-family: var(--font-d);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -.03em;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+.fcta-sub { font-size: 16px; color: var(--muted); line-height: 1.7; margin-bottom: 30px; }
+.fcta-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+.fcta-opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  transition: all .2s;
+  cursor: pointer;
+  text-decoration: none;
+}
+.fcta-opt:hover { border-color: var(--accent); box-shadow: var(--shadow-sm); transform: translateX(3px); }
+.fcta-opt-ico {
+  width: 38px; height: 38px;
+  background: var(--accent-ll);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.fcta-opt-text strong { display: block; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.fcta-opt-text span { font-size: 12.5px; color: var(--dim); }
+
+/* FORM */
+.lead-form {
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+}
+.lf-title { font-family: var(--font-d); font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -.03em; margin-bottom: 5px; }
+.lf-sub { font-size: 13.5px; color: var(--muted); margin-bottom: 26px; }
+.lf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lf-group { margin-bottom: 0; }
+.lf-group.full { grid-column: 1/-1; }
+.lf-label { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.lf-input, .lf-select, .lf-textarea {
+  width: 100%;
+  background: var(--off);
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-family: var(--font-s);
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+  -webkit-appearance: none;
+}
+.lf-input::placeholder, .lf-textarea::placeholder { color: var(--dim); }
+.lf-input:focus, .lf-select:focus, .lf-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29,78,216,.1);
+  background: var(--white);
+}
+.lf-textarea { height: 88px; resize: none; }
+.lf-select { cursor: pointer; }
+.lf-submit {
+  width: 100%;
+  padding: 13px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-family: var(--font-s);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .18s;
+  margin-top: 14px;
+  letter-spacing: -.01em;
+}
+.lf-submit:hover { background: var(--accent-h); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(29,78,216,.22); }
+.lf-privacy { font-size: 11.5px; color: var(--dim); text-align: center; margin-top: 12px; line-height: 1.55; }
+
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+footer {
+  background: var(--white);
+  border-top: 1px solid var(--line);
+  padding: 40px 0 28px;
+}
+.footer-inner { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+.footer-links { display: flex; gap: 24px; list-style: none; }
+.footer-links a { font-size: 13px; color: var(--dim); transition: color .18s; }
+.footer-links a:hover { color: var(--muted); }
+.footer-copy { font-size: 12.5px; color: var(--dim); padding-top: 20px; border-top: 1px solid var(--line); text-align: center; }
+.footer-copy a { color: var(--dim); }
+
+/* ════════════════════════════════════════
+   DIVIDER
+════════════════════════════════════════ */
+hr.sec-rule { border: none; border-top: 1px solid var(--line); margin: 0; }
+
+/* ════════════════════════════════════════
+   SCROLL ANIMATIONS
+════════════════════════════════════════ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.fade-up { animation: fade-up .65s cubic-bezier(.22,1,.36,1) backwards; }
+.d1 { animation-delay: .08s; }
+.d2 { animation-delay: .18s; }
+.d3 { animation-delay: .28s; }
+.d4 { animation-delay: .42s; }
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .wrap, .wrap-sm { padding: 0 20px; }
+  section { padding: 72px 0; }
+  .hero-headline { font-size: 40px; }
+  .problem-grid, .fail-cards, .hiw-grid, .ben-grid, .pricing-grid, .sec-grid { grid-template-columns: 1fr; }
+  .sol-grid, .fcta-inner, .uc-panel.on { grid-template-columns: 1fr; }
+  .lf-row { grid-template-columns: 1fr; }
+  .lb-row { gap: 8px; }
+  .lead-form { padding: 28px 20px; }
+  .arch-sources { gap: 7px; }
+  .arch-box { min-width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══════════════════════════════════ -->
+<nav class="nav">
+  <a class="nav-logo" href="#">
+    <div class="nav-logomark">V</div>
+    Vektor
+  </a>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#solution">Solution</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#use-cases">Use Cases</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <div class="nav-cta-wrap">
+    <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Talk to an Expert</a>
+    <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Book Demo</a>
+  </div>
+</nav>
+
+
+<!-- ══ HERO ══════════════════════════════════ -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div class="chip chip-blue fade-up">✦ AI-Powered Analytics Platform</div>
+      <h1 class="hero-headline fade-up d1">
+        Turn company data into<br><em>instant answers</em>
+      </h1>
+      <p class="hero-sub fade-up d2">
+        Stop waiting days for analyst tickets. Vektor lets every team — product, marketing, leadership — ask questions in plain English and get live answers, charts, and explanations in seconds.
+      </p>
+      <div class="hero-btns fade-up d3">
+        <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Book a Demo</a>
+      </div>
+      <p class="hero-cal fade-up d3">
+        🗓 Prefer to pick a time now?
+        <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer">Schedule a 30-min session →</a>
+      </p>
+
+      <!-- Animated query demo -->
+      <div class="demo-win fade-up d4">
+        <div class="dw-bar">
+          <div class="dw-dot"></div>
+          <div class="dw-dot"></div>
+          <div class="dw-dot"></div>
+          <div class="dw-bartitle">vektor — ask anything</div>
+        </div>
+        <div class="dw-body">
+          <div class="dw-prompt">
+            <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="#1d4ed8" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+            </svg>
+            <span>Why did activation drop last week?<span class="dw-cursor"></span></span>
+          </div>
+          <div class="dw-processing">
+            <div class="dw-spin"></div>
+            Querying product_events → onboarding_funnel → user_sessions …
+          </div>
+          <div class="dw-result">
+            <div class="dw-result-label">↳ Vektor Analysis</div>
+            <div class="dw-result-text">
+              Activation fell <strong style="color:var(--red)">–34%</strong> week-over-week, driven by users from the Nov 12 email campaign. The
+              <em>"Connect first integration"</em> onboarding step shows a
+              <strong style="color:var(--red)">61% abandonment rate</strong> — up from 28% the prior week.
+              No change in overall traffic volume.
+            </div>
+            <div class="dw-chart">
+              <div class="dw-bar-item"></div>
+              <div class="dw-bar-item"></div>
+              <div class="dw-bar-item"></div>
+              <div class="dw-bar-item"></div>
+              <div class="dw-bar-item"></div>
+              <div class="dw-bar-item"></div>
+              <div class="dw-bar-item"></div>
+            </div>
+            <div class="dw-chart-labels">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <div class="dw-tags">
+              <div class="dw-tag">product_events</div>
+              <div class="dw-tag">onboarding_funnel</div>
+              <div class="dw-tag">Mixpanel</div>
+              <div class="dw-tag">Segment</div>
+              <div class="dw-tag">live query</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ LOGO BELT ═══════════════════════════ -->
+<div class="logo-belt">
+  <div class="lb-label">Connects with the tools your team already uses</div>
+  <div class="lb-row">
+    <div class="lb-chip">PostgreSQL</div>
+    <div class="lb-chip">Snowflake</div>
+    <div class="lb-chip">Mixpanel</div>
+    <div class="lb-chip">Segment</div>
+    <div class="lb-chip">Zendesk</div>
+    <div class="lb-chip">HubSpot</div>
+    <div class="lb-chip">BigQuery</div>
+    <div class="lb-chip">Redshift</div>
+    <div class="lb-chip">Salesforce</div>
+  </div>
+</div>
+
+
+<!-- ══ PROBLEM ══════════════════════════════ -->
+<section id="problem">
+  <div class="wrap">
+    <div class="sh">
+      <div class="chip chip-red">⚠ The Problem</div>
+      <h2>Your data is scattered.<br>Your decisions are slow.</h2>
+      <p>Modern tech companies generate more data than ever — but getting a single answer still means filing a ticket and waiting days.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="prob-card">
+        <div class="prob-eyebrow">Fragmentation</div>
+        <div class="prob-title">Data lives in a dozen different tools</div>
+        <p class="prob-desc">Product metrics in Mixpanel. Revenue in your CRM. Support trends in Zendesk. Customer feedback somewhere else. Nobody has the full picture without assembling it by hand — if they ever do.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-eyebrow">Bottleneck</div>
+        <div class="prob-title">Every question goes through an analyst</div>
+        <p class="prob-desc">Data requests pile up in Jira. An analyst translates the question, writes SQL, queries the right system, formats the results, and sends back a report — days later, if you're lucky.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-eyebrow">Rigidity</div>
+        <div class="prob-title">Dashboards can't answer new questions</div>
+        <p class="prob-desc">Pre-built dashboards show what someone thought you needed last quarter. The moment business context shifts, you're back to square one. Static charts don't drill down. They don't explain. They just sit there.</p>
+      </div>
+      <div class="prob-card">
+        <div class="prob-eyebrow">Latency</div>
+        <div class="prob-title">Insights arrive after the window closes</div>
+        <p class="prob-desc">By the time the data story is compiled, reviewed, and presented, the opportunity is gone or the problem has compounded. Teams start making decisions on gut feel because waiting costs more than guessing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ SOLUTION ═════════════════════════════ -->
+<section id="solution">
+  <div class="wrap">
+    <div class="sol-grid">
+      <div>
+        <div class="chip chip-green">✦ The Solution</div>
+        <h2 style="font-family:var(--font-d);font-size:clamp(28px,3.5vw,42px);font-weight:800;line-height:1.1;letter-spacing:-.03em;color:var(--text);margin-bottom:16px;">
+          An AI data assistant for your whole company
+        </h2>
+        <p style="font-size:15px;color:var(--muted);line-height:1.72;margin-bottom:4px;">
+          Vektor connects to all your data sources and turns natural language questions into instant, accurate answers — for every team member, not just analysts.
+        </p>
+        <div class="sol-steps">
+          <div class="sol-step">
+            <div class="sol-num">1</div>
+            <div class="sol-step-text">
+              <strong>Interprets your question</strong>
+              <p>Understands business intent, not just keywords — "activation" means your activation event, not a generic term.</p>
+            </div>
+          </div>
+          <div class="sol-step">
+            <div class="sol-num">2</div>
+            <div class="sol-step-text">
+              <strong>Generates precise queries</strong>
+              <p>Translates intent into SQL or API calls against your actual schema, safely and accurately.</p>
+            </div>
+          </div>
+          <div class="sol-step">
+            <div class="sol-num">3</div>
+            <div class="sol-step-text">
+              <strong>Retrieves live data</strong>
+              <p>Pulls fresh results directly from your connected sources — not a stale cache.</p>
+            </div>
+          </div>
+          <div class="sol-step">
+            <div class="sol-num">4</div>
+            <div class="sol-step-text">
+              <strong>Produces the right chart</strong>
+              <p>Picks the visualization that best fits the question type — trend, funnel, distribution, or comparison.</p>
+            </div>
+          </div>
+          <div class="sol-step">
+            <div class="sol-num">5</div>
+            <div class="sol-step-text">
+              <strong>Explains the insight in plain language</strong>
+              <p>Every answer includes a written explanation your whole team can read, share, and act on.</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:30px;text-align:center;">
+          <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Request Early Access</a>
+        </div>
+      </div>
+
+      <!-- Mock panel -->
+      <div>
+        <div class="sol-panel">
+          <div class="sp-bar">
+            <span class="sp-tab active">Analytics</span>
+            <span class="sp-tab">Trends</span>
+            <span class="sp-tab">Alerts</span>
+          </div>
+          <div class="sp-body">
+            <div class="sp-q">💬 "What's causing Enterprise churn this quarter?"</div>
+            <div class="sp-metrics">
+              <div class="sp-metric">
+                <div class="sp-metric-l">Enterprise Churn</div>
+                <div class="sp-metric-v">8.4%</div>
+                <div class="sp-metric-d sp-down">↑ +2.1pp vs last quarter</div>
+              </div>
+              <div class="sp-metric">
+                <div class="sp-metric-l">ARR at Risk</div>
+                <div class="sp-metric-v">$284K</div>
+                <div class="sp-metric-d sp-down">this month</div>
+              </div>
+              <div class="sp-metric">
+                <div class="sp-metric-l">Days to Churn</div>
+                <div class="sp-metric-v">47</div>
+                <div class="sp-metric-d" style="color:var(--dim)">avg from activation</div>
+              </div>
+              <div class="sp-metric">
+                <div class="sp-metric-l">Retention @ 5+ seats</div>
+                <div class="sp-metric-v">94%</div>
+                <div class="sp-metric-d sp-up">↑ at 6 months</div>
+              </div>
+            </div>
+            <div class="sp-insight">
+              <span style="flex-shrink:0">💡</span>
+              <span>Accounts that churned had a median of <strong>2 or fewer active seats</strong> by day 30. Focus expansion on early seat growth to improve retention.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ BENEFITS ══════════════════════════════ -->
+<section id="benefits">
+  <div class="wrap">
+    <div class="sh">
+      <div class="chip chip-green">✦ Outcomes</div>
+      <h2>What changes when your<br>data talks back</h2>
+    </div>
+    <div class="ben-grid">
+      <div class="ben-card">
+        <div class="ben-icon">⚡</div>
+        <div class="ben-title">Faster decisions</div>
+        <p class="ben-desc">Go from question to answer in seconds. Act on data while it's still relevant — not after the moment has passed.</p>
+      </div>
+      <div class="ben-card">
+        <div class="ben-icon">🔓</div>
+        <div class="ben-title">Reduced analyst dependency</div>
+        <p class="ben-desc">Free your data team from repetitive query requests. Let them focus on the work that genuinely requires deep expertise.</p>
+      </div>
+      <div class="ben-card">
+        <div class="ben-icon">🔗</div>
+        <div class="ben-title">Unified customer view</div>
+        <p class="ben-desc">Cross-system questions answered in one place. No more assembling insights manually across five different tools.</p>
+      </div>
+      <div class="ben-card">
+        <div class="ben-icon">🌐</div>
+        <div class="ben-title">Democratized data access</div>
+        <p class="ben-desc">Every team member can explore data independently — product, marketing, CS, and leadership — without knowing SQL.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ USE CASES ════════════════════════════ -->
+<section id="use-cases">
+  <div class="wrap">
+    <div class="sh">
+      <div class="chip chip-blue">✦ Use Cases</div>
+      <h2>For every team that runs on data</h2>
+      <p>From sprint planning to board prep — Vektor gives each function the answers they need, when they need them.</p>
+    </div>
+
+    <div class="uc-nav">
+      <button class="uc-btn on" onclick="showUC(event,'product')">Product</button>
+      <button class="uc-btn" onclick="showUC(event,'marketing')">Marketing</button>
+      <button class="uc-btn" onclick="showUC(event,'cs')">Customer Success</button>
+      <button class="uc-btn" onclick="showUC(event,'leadership')">Leadership</button>
+    </div>
+
+    <div id="uc-product" class="uc-panel on">
+      <div>
+        <div class="uc-copy-eyebrow">Product Teams</div>
+        <div class="uc-copy-title">Ship faster with data you can actually access</div>
+        <p class="uc-copy-text">Go from user observation to data-backed decision without waiting on an analyst request. Understand activation, retention, and feature adoption in minutes — not days.</p>
+        <div style="text-align:center"><a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Talk to a Product Expert →</a></div>
+      </div>
+      <div class="uc-qs">
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Which onboarding step has the highest drop-off this week?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "What features do power users engage with that new users don't?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "How long does it take users to reach their first 'aha moment'?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Compare retention: mobile signup vs web signup cohorts."</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Which user segment grew the fastest last quarter?"</div>
+      </div>
+    </div>
+
+    <div id="uc-marketing" class="uc-panel">
+      <div>
+        <div class="uc-copy-eyebrow">Marketing Teams</div>
+        <div class="uc-copy-title">Connect campaigns to outcomes, not just clicks</div>
+        <p class="uc-copy-text">See exactly which channels, cohorts, and campaigns produce customers who stay — without building a data pipeline first.</p>
+        <div style="text-align:center"><a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Talk to a Growth Expert →</a></div>
+      </div>
+      <div class="uc-qs">
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Which campaign cohort has the best 90-day retention?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "What's our blended CAC by channel over the last two quarters?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Show funnel conversion rate broken down by paid source."</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Which ICP segment has the highest free-to-paid conversion?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "How did the rebrand affect signup volume week over week?"</div>
+      </div>
+    </div>
+
+    <div id="uc-cs" class="uc-panel">
+      <div>
+        <div class="uc-copy-eyebrow">Customer Success</div>
+        <div class="uc-copy-title">Spot churn risk before customers leave</div>
+        <p class="uc-copy-text">Understand account health, support trends, and product engagement gaps — all in one place, without filing a BI request.</p>
+        <div style="text-align:center"><a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Talk to a CS Expert →</a></div>
+      </div>
+      <div class="uc-qs">
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Which Enterprise accounts have declining usage this month?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "What's the most common support ticket category in Q3?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Show me accounts with no logins in the last 30 days."</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "What's our average time to resolution for P1 tickets?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Correlate NPS scores with product usage frequency."</div>
+      </div>
+    </div>
+
+    <div id="uc-leadership" class="uc-panel">
+      <div>
+        <div class="uc-copy-eyebrow">Leadership &amp; Founders</div>
+        <div class="uc-copy-title">One view of the business, zero dependencies</div>
+        <p class="uc-copy-text">Ask cross-functional questions that used to require three teams and a week to answer — and get them in under a minute, ready to share.</p>
+        <div style="text-align:center"><a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Talk to an Expert →</a></div>
+      </div>
+      <div class="uc-qs">
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "What's our current NRR and how has it trended this year?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Where are we losing deals in the sales funnel this quarter?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Compare activation rates across our top three customer segments."</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "What's the payback period for our last two acquired cohorts?"</div>
+        <div class="uc-q"><span class="uc-q-icon">💬</span> "Show weekly DAU/MAU ratio for the past six months."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ CTA BAND ══════════════════════════════ -->
+<div class="cta-band">
+  <div class="wrap">
+    <h2>Seen enough? Let's talk.</h2>
+    <p>Most teams are up and running — with live answers — in under two weeks. We'll show you exactly what that looks like for your stack.</p>
+    <div class="cta-band-btns">
+      <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-white btn-lg">Book a Demo</a>
+      <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.85)">Request Early Access</a>
+    </div>
+    <p class="cta-band-cal">🗓 Prefer self-service? <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer">Pick a time on our calendar →</a></p>
+  </div>
+</div>
+
+
+<!-- ══ HOW IT WORKS ══════════════════════════ -->
+<section id="how-it-works" class="alt2">
+  <div class="wrap">
+    <div class="sh">
+      <div class="chip chip-blue">⚙ How It Works</div>
+      <h2>Set up once. Answer questions forever.</h2>
+      <p>Vektor connects to your existing data stack and learns your business language — no migration, no replatforming required.</p>
+    </div>
+    <div class="hiw-grid">
+      <div class="hiw-step">
+        <div class="hiw-num">01</div>
+        <div class="hiw-title">Connect Your Data Sources</div>
+        <p class="hiw-desc">Securely connect Vektor to your existing tools using native, read-only integrations. Works with your production databases, data warehouse, product analytics, CRM, and support systems — no ETL required.</p>
+        <div class="hiw-tags">
+          <span class="hiw-tag">PostgreSQL</span>
+          <span class="hiw-tag">Snowflake</span>
+          <span class="hiw-tag">BigQuery</span>
+          <span class="hiw-tag">Mixpanel</span>
+          <span class="hiw-tag">Segment</span>
+          <span class="hiw-tag">HubSpot</span>
+          <span class="hiw-tag">Zendesk</span>
+        </div>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-num">02</div>
+        <div class="hiw-title">Build Your Semantic Layer</div>
+        <p class="hiw-desc">Vektor maps your raw schema to the vocabulary your business uses. Define metrics, dimensions, events, and business concepts once — so "activation," "churn," or "MQL" always return the right data, every time.</p>
+        <div class="hiw-tags">
+          <span class="hiw-tag">Schema mapping</span>
+          <span class="hiw-tag">Metric definitions</span>
+          <span class="hiw-tag">Business logic</span>
+          <span class="hiw-tag">Event taxonomy</span>
+          <span class="hiw-tag">Joins &amp; rollups</span>
+        </div>
+      </div>
+      <div class="hiw-step">
+        <div class="hiw-num">03</div>
+        <div class="hiw-title">Ask in Natural Language</div>
+        <p class="hiw-desc">Any team member types a question in plain English. Vektor interprets the intent, generates a precise query against live data, and returns a chart with a written explanation — in seconds, no ticket required.</p>
+        <div class="hiw-tags">
+          <span class="hiw-tag">Live answers</span>
+          <span class="hiw-tag">Auto charts</span>
+          <span class="hiw-tag">Drill-downs</span>
+          <span class="hiw-tag">Share &amp; export</span>
+          <span class="hiw-tag">No SQL</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ SECURITY ══════════════════════════════ -->
+<section id="security" class="alt">
+  <div class="wrap">
+    <div class="sh" style="text-align:left;margin-bottom:0;">
+      <div class="chip chip-grey">🔒 Security &amp; Compliance</div>
+      <h2 style="text-align:left;max-width:560px;">Enterprise-grade security,<br>built in — not bolted on</h2>
+      <p style="text-align:left;margin:0;max-width:520px;">Vektor is designed for companies with strict data governance. Your data stays in your infrastructure. We never train on your data.</p>
+    </div>
+    <div class="sec-grid">
+      <div class="sec-card">
+        <div class="sec-ico">👤</div>
+        <div>
+          <div class="sec-title">Role-Based Access Control</div>
+          <p class="sec-desc">Define who can query which sources. Marketing doesn't see revenue data. Engineering doesn't see customer PII. Granular permissions at the team and user level.</p>
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-ico">🔐</div>
+        <div>
+          <div class="sec-title">Secure Connectors</div>
+          <p class="sec-desc">All connections are strictly read-only and encrypted in transit. Credentials are stored with enterprise-grade key management. No write access is ever granted.</p>
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-ico">📝</div>
+        <div>
+          <div class="sec-title">Full Audit Logs</div>
+          <p class="sec-desc">Every query is logged: who asked, when, which data sources were accessed, and what was returned. Complete traceability for compliance and internal governance.</p>
+        </div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-ico">🏢</div>
+        <div>
+          <div class="sec-title">On-Premise Deployment</div>
+          <p class="sec-desc">Deploy Vektor entirely within your own infrastructure or private cloud. Your data never leaves your environment. Available on Enterprise plans with VPC support and SSO.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ ARCHITECTURE ══════════════════════════ -->
+<section id="architecture" class="alt">
+  <div class="wrap-sm">
+    <div class="sh">
+      <div class="chip chip-grey">🔧 Architecture</div>
+      <h2>How Vektor works under the hood</h2>
+      <p>A layered system that translates natural language into precise, live data queries — safely, accurately, and in real time.</p>
+    </div>
+    <div class="arch">
+      <!-- Sources -->
+      <div class="arch-sources">
+        <div class="arch-box"><div class="arch-box-t">PostgreSQL</div><div class="arch-box-s">transactional db</div></div>
+        <div class="arch-box"><div class="arch-box-t">Snowflake</div><div class="arch-box-s">data warehouse</div></div>
+        <div class="arch-box"><div class="arch-box-t">Mixpanel</div><div class="arch-box-s">product events</div></div>
+        <div class="arch-box"><div class="arch-box-t">HubSpot</div><div class="arch-box-s">CRM</div></div>
+        <div class="arch-box"><div class="arch-box-t">Zendesk</div><div class="arch-box-s">support</div></div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-box blue" style="min-width:320px;padding:16px 28px;">
+        <div class="arch-box-t" style="font-size:13.5px;">Data Connectors</div>
+        <div class="arch-box-s">Secure read-only integrations · schema introspection · incremental sync</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-box blue" style="min-width:320px;padding:16px 28px;">
+        <div class="arch-box-t" style="font-size:13.5px;">Semantic Layer</div>
+        <div class="arch-box-s">Metrics · dimensions · business logic · event taxonomy · joins</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-box blue" style="min-width:320px;padding:16px 28px;">
+        <div class="arch-box-t" style="font-size:13.5px;">AI Query Engine</div>
+        <div class="arch-box-s">Intent recognition · query generation · result synthesis · error correction</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-box green" style="min-width:380px;padding:18px 32px;">
+        <div class="arch-box-t" style="font-size:14px;">Natural Language Interface + Visualizations</div>
+        <div class="arch-box-s">Ask questions → get answers, charts, and written explanations instantly</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ PRICING ═══════════════════════════════ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sh">
+      <div class="chip chip-blue">💳 Pricing</div>
+      <h2>Simple tiers. Transparent value.</h2>
+      <p>All plans include onboarding support and access to the full integration library. Contact us for a custom quote.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pc">
+        <div class="pc-badge pc-badge-default">Starter</div>
+        <div class="pc-name">Starter</div>
+        <p class="pc-desc">For small teams beginning their AI analytics journey. Priced per seat — reach out for a quote.</p>
+        <div class="pc-divider"></div>
+        <ul class="pc-feats">
+          <li><span class="pc-check">✓</span> Up to 3 data source connections</li>
+          <li><span class="pc-check">✓</span> Up to 5 team members</li>
+          <li><span class="pc-check">✓</span> Natural language query interface</li>
+          <li><span class="pc-check">✓</span> Basic semantic layer configuration</li>
+          <li><span class="pc-check">✓</span> Standard chart types</li>
+          <li><span class="pc-check">✓</span> Email support</li>
+        </ul>
+        <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width:100%;justify-content:center;">Get Started</a>
+      </div>
+
+      <div class="pc featured">
+        <div class="pc-badge pc-badge-featured">Most Popular — Growth</div>
+        <div class="pc-name">Growth</div>
+        <p class="pc-desc">For scaling teams that run on data. Full feature access with team-wide rollout support included.</p>
+        <div class="pc-divider"></div>
+        <ul class="pc-feats">
+          <li><span class="pc-check">✓</span> Up to 10 data source connections</li>
+          <li><span class="pc-check">✓</span> Unlimited team members</li>
+          <li><span class="pc-check">✓</span> Advanced semantic layer + custom metrics</li>
+          <li><span class="pc-check">✓</span> Role-based access control</li>
+          <li><span class="pc-check">✓</span> Saved questions &amp; dashboards</li>
+          <li><span class="pc-check">✓</span> Slack integration</li>
+          <li><span class="pc-check">✓</span> Priority support + dedicated onboarding</li>
+        </ul>
+        <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-white" style="width:100%;justify-content:center;">Book a Demo</a>
+      </div>
+
+      <div class="pc">
+        <div class="pc-badge pc-badge-default">Enterprise</div>
+        <div class="pc-name">Enterprise</div>
+        <p class="pc-desc">For companies with complex infrastructure, compliance needs, or on-premise deployment requirements.</p>
+        <div class="pc-divider"></div>
+        <ul class="pc-feats">
+          <li><span class="pc-check">✓</span> Unlimited data source connections</li>
+          <li><span class="pc-check">✓</span> On-premise or private cloud deployment</li>
+          <li><span class="pc-check">✓</span> Custom semantic layer &amp; integrations</li>
+          <li><span class="pc-check">✓</span> Full audit logs, SSO, and VPC support</li>
+          <li><span class="pc-check">✓</span> Dedicated customer success manager</li>
+          <li><span class="pc-check">✓</span> SLA guarantees</li>
+          <li><span class="pc-check">✓</span> Custom contract &amp; invoicing</li>
+        </ul>
+        <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="width:100%;justify-content:center;">Talk to Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FINAL CTA + FORM ══════════════════════ -->
+<section id="final-cta" class="alt">
+  <div class="wrap">
+    <div class="fcta-inner">
+      <div>
+        <div class="chip chip-green">✦ Get Started</div>
+        <h2 class="fcta-headline">Stop waiting weeks for insights</h2>
+        <p class="fcta-sub">See Vektor working with your actual data in a personalized 30-minute session. We'll connect to a sample of your stack and answer a real question live.</p>
+
+        <div class="fcta-options">
+          <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="fcta-opt">
+            <div class="fcta-opt-ico">📅</div>
+            <div class="fcta-opt-text">
+              <strong>Book a Live Demo</strong>
+              <span>30-minute personalized session with your data</span>
+            </div>
+          </a>
+          <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="fcta-opt">
+            <div class="fcta-opt-ico">🚀</div>
+            <div class="fcta-opt-text">
+              <strong>Join the Early Access Program</strong>
+              <span>Hands-on access for select teams — limited spots</span>
+            </div>
+          </a>
+          <a href="https://calendar.app.google/N4UP9TGETGw4s98s5" target="_blank" rel="noopener noreferrer" class="fcta-opt">
+            <div class="fcta-opt-ico">💬</div>
+            <div class="fcta-opt-text">
+              <strong>Talk to an Expert</strong>
+              <span>Discuss your data challenge — no commitment</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- LEAD FORM -->
+      <div class="lead-form" id="lead-form">
+        <div class="lf-title">Request a Demo</div>
+        <p class="lf-sub">We'll reach out within one business day to schedule your session.</p>
+        <div class="lf-row">
+          <div class="lf-group">
+            <label class="lf-label">Name</label>
+            <input id="lf-name" type="text" class="lf-input" placeholder="Jane Smith"/>
+          </div>
+          <div class="lf-group">
+            <label class="lf-label">Work Email</label>
+            <input id="lf-email" type="email" class="lf-input" placeholder="jane@company.com"/>
+          </div>
+          <div class="lf-group">
+            <label class="lf-label">Company</label>
+            <input id="lf-company" type="text" class="lf-input" placeholder="Acme Corp"/>
+          </div>
+          <div class="lf-group">
+            <label class="lf-label">Role</label>
+            <select id="lf-role" class="lf-select">
+              <option value="" disabled selected>Select your role</option>
+              <option>Head of Product</option>
+              <option>VP / Director of Product</option>
+              <option>Growth / Marketing Leader</option>
+              <option>CTO / VP Engineering</option>
+              <option>Founder / CEO</option>
+              <option>Data / Analytics Leader</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="lf-group full">
+            <label class="lf-label">What's your biggest data challenge?</label>
+            <textarea id="lf-message" class="lf-textarea" placeholder="e.g. our product team relies entirely on analysts for any data question…"></textarea>
+          </div>
+        </div>
+        <button class="lf-submit" id="lf-submit-btn" onclick="handleSub(this)">Request Demo →</button>
+        <p id="lf-error" style="display:none;color:var(--red);font-size:12.5px;text-align:center;margin-top:10px;"></p>
+        <p class="lf-privacy">No spam. No pressure. We respect your time and inbox.<br>Your details are never shared with third parties.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FOOTER ════════════════════════════════ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <a class="nav-logo" href="#">
+        <div class="nav-logomark">V</div>
+        Vektor
+      </a>
+      <ul class="footer-links">
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#solution">Solution</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#use-cases">Use Cases</a></li>
+        <li><a href="#security">Security</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+    </div>
+    <p class="footer-copy">© 2025 Vektor. All rights reserved. &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a></p>
+  </div>
+</footer>
+
+
+<script>
+/* ── Tab switching for Use Cases ── */
+function showUC(e, id) {
+  document.querySelectorAll('.uc-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.uc-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('uc-' + id).classList.add('on');
+  e.target.classList.add('on');
+}
+
+/* ── Google Sheets Web App URL ──
+   To activate form → Sheets integration:
+   1. Open https://script.google.com and create a new project
+   2. Paste the Apps Script below, then click Deploy → New deployment → Web App
+      • Execute as: Me  |  Who has access: Anyone
+   3. Copy the deployed Web App URL and replace APPS_SCRIPT_URL below
+
+   ── Apps Script to paste ──────────────────────────────────────────
+   const SHEET_ID = '1sidMTuAYjnulWfDIYhY0Plo6HxpkmzUxTD4JjOSCB_I';
+
+   function doPost(e) {
+     const data = JSON.parse(e.postData.contents);
+     const sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+     sheet.appendRow([
+       new Date(),
+       data.name,
+       data.email,
+       data.company,
+       data.role,
+       data.message
+     ]);
+     return ContentService
+       .createTextOutput(JSON.stringify({ result: 'success' }))
+       .setMimeType(ContentService.MimeType.JSON);
+   }
+   ─────────────────────────────────────────────────────────────────── */
+
+const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+async function handleSub(btn) {
+  const name    = document.getElementById('lf-name').value.trim();
+  const email   = document.getElementById('lf-email').value.trim();
+  const company = document.getElementById('lf-company').value.trim();
+  const role    = document.getElementById('lf-role').value;
+  const message = document.getElementById('lf-message').value.trim();
+  const errEl   = document.getElementById('lf-error');
+
+  // Basic validation
+  if (!name || !email || !company || !role) {
+    errEl.textContent = 'Please fill in all required fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  btn.style.opacity = '.7';
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, company, role, message })
+    });
+    btn.textContent = '✓ Request received — we\'ll be in touch soon!';
+    btn.style.background = 'var(--green)';
+    btn.style.opacity = '1';
+    btn.style.boxShadow = '0 6px 20px rgba(22,163,74,.2)';
+    // Clear fields
+    ['lf-name','lf-email','lf-company','lf-message'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('lf-role').selectedIndex = 0;
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Request Demo →';
+    btn.style.opacity = '1';
+    errEl.textContent = 'Something went wrong. Please try again.';
+    errEl.style.display = 'block';
+  }
+}
+
+/* ── Scroll-triggered fade-in for cards ── */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: .07 });
+
+document.querySelectorAll('.prob-card, .fail-card, .hiw-step, .ben-card, .sec-card, .pc, .fcta-opt').forEach((el, i) => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(18px)';
+  el.style.transition = `opacity .55s ease ${i * .035}s, transform .55s cubic-bezier(.22,1,.36,1) ${i * .035}s`;
+  io.observe(el);
+});
+
+/* ── Sticky nav shadow on scroll ── */
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('.nav');
+  nav.style.boxShadow = window.scrollY > 10 ? '0 2px 12px rgba(0,0,0,.07)' : 'none';
+});
+</script>
+</body>
+</html>
